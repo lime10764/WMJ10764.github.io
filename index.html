@@ -1,807 +1,378 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head><div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js"></div>
+<div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js"  data-fadeOutAutoplay data-memory="1"></div>
 <script src="https://player.xfyun.club/js/xf-MusicPlayer/js/xf-MusicPlayer.min.js"></script>
+<html lang="zh-CN">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>覃凌入口 - 精确运行时间</title>
+    <title>覃凌入口</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
-        /* 公告模态框样式 */
-        .announcement-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .announcement-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-            animation: slideUp 0.3s ease;
-        }
-        
-        .announcement-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #777;
-            transition: color 0.3s;
-        }
-        
-        .announcement-close:hover {
-            color: #333;
-        }
-        
-        .announcement-title {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .announcement-body {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #555;
-        }
-        
-        .announcement-footer {
-            margin-top: 25px;
-            text-align: center;
-        }
-        
-        .announcement-confirm {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-        }
-        
-        .announcement-confirm:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
+
         body {
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(45deg, #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #0000ff, #9900ff, #ff00ff);
-            background-size: 400% 400%;
-            animation: flow 15s ease infinite;
-            font-family: "Microsoft YaHei", sans-serif;
+            background: url('https://raw.githubusercontent.com/lime10764/WMJ10764.github.io/main/1110099.webp') center/cover no-repeat fixed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
         }
-        
-        @keyframes flow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 0;
         }
-        
+
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 700px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 24px;
+            padding: 36px;
+            max-width: 640px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.35);
             text-align: center;
         }
-        
-        .header {
-            margin-bottom: 25px;
-        }
-        
+
         .title {
-            font-size: 2.2em;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-weight: bold;
+            font-size: 1.8em;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
         }
-        
+
         .subtitle {
-            font-size: 1.1em;
-            color: #7f8c8d;
-            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 24px;
+            font-weight: 400;
         }
-        
+
         .time-display {
-            background: #e8f4fd;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1em;
-            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 18px 0;
+            font-size: 0.95em;
+            line-height: 1.7;
+            color: #fff;
         }
-        
+
         .current-time {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
-        
+
         .server-status {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 15px 0;
-            font-weight: bold;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #fff;
+            font-size: 0.9em;
         }
-        
+
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        .status-online {
-            background: #28a745;
+            margin-right: 8px;
+            background: #4ade80;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
-        
+
         .uptime-display {
-            background: #fff3cd;
-            border: 2px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            padding: 16px;
+            margin: 16px 0;
+            color: #fff;
         }
-        
+
         .uptime-title {
-            font-weight: bold;
-            color: #856404;
+            font-weight: 600;
             margin-bottom: 10px;
-            font-size: 1.1em;
+            font-size: 0.95em;
         }
-        
+
         .uptime-values {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
         }
-        
+
         .uptime-unit {
-            background: #fff;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ffeaa7;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 8px 4px;
+            border-radius: 8px;
         }
-        
+
         .unit-value {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #d35400;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fbbf24;
         }
-        
+
         .unit-label {
-            font-size: 0.9em;
-            color: #7f8c8d;
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.65);
+            margin-top: 2px;
         }
-        
+
         .info-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 18px 0;
             text-align: left;
+            color: #fff;
         }
-        
+
         .info-item {
-            margin: 12px 0;
-            font-size: 1.1em;
+            margin: 8px 0;
+            font-size: 0.9em;
             display: flex;
             align-items: center;
         }
-        
-        .info-icon {
-            margin-right: 10px;
-            font-size: 1.2em;
+
+        .info-label {
+            color: rgba(255,255,255,0.6);
+            min-width: 70px;
         }
-        
+
         .button-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 25px 0;
+            gap: 12px;
+            margin: 24px 0 16px;
         }
-        
+
         .nav-button {
-            padding: 16px 25px;
-            font-size: 1.1em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 13px 16px;
+            font-size: 0.88em;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+
+        .nav-button:active {
+            transform: scale(0.94);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.28);
         }
-        
-        .nav-button.secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+        .nav-button.bounce {
+            animation: bounceBack 0.35s ease;
         }
-        
-        .nav-button.help {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+        @keyframes bounceBack {
+            0% { transform: scale(0.94); }
+            60% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
-        
-        .nav-button.kuaishou {
-            background: linear-gradient(135deg, #FF5000 0%, #FF7C32 100%);
+
+        .nav-button .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out;
+            pointer-events: none;
         }
-        
-        .nav-button.qq {
-            background: linear-gradient(135deg, #12B7F5 0%, #3B9AE1 100%);
+
+        @keyframes rippleAnim {
+            to { transform: scale(2.5); opacity: 0; }
         }
-        
-        .nav-button.intro {
-            background: linear-gradient(135deg, #FF9A8B 0%, #FF6A88 100%);
-        }
-        
-        .nav-button.auto-link {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-        }
-        
+
         .footer {
-            margin-top: 30px;
-            font-size: 0.9em;
-            color: #7f8c8d;
+            margin-top: 20px;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.6;
         }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 8px;
-            z-index: 1001;
-            display: none;
-        }
-        
+
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 24px 16px;
                 margin: 10px;
             }
-            
-            .title {
-                font-size: 1.8em;
-            }
-            
+            .title { font-size: 1.4em; }
             .button-group {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
-            
             .nav-button {
-                padding: 14px 20px;
-                font-size: 1.1em;
+                padding: 14px;
+                font-size: 0.92em;
             }
-            
             .uptime-values {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .announcement-content {
-                padding: 20px;
-            }
-            
-            .announcement-title {
-                font-size: 1.5em;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 公告模态框 -->
-    <div class="announcement-modal" id="announcementModal">
-        <div class="announcement-content">
-            <button class="announcement-close" id="closeAnnouncement">×</button>
-            <h2 class="announcement-title">重要公告</h2>
-            <div class="announcement-body" id="announcementText">
-                
-            </div>
-            <div class="announcement-footer">
-                <button class="announcement-confirm" id="confirmAnnouncement">我知道了</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="loading" id="loading">页面加载中...</div>
-    <div class="notification" id="notification"></div>
-
     <div class="container">
-        <div class="header">
-            <h1 class="title">⏱️ 覃凌入口</h1>
-            <p class="subtitle">精确运行时间监控系统</p>
-        </div>
+        <div class="title">覃凌入口</div>
+        <div class="subtitle">精确运行时间监控系统</div>
 
         <div class="time-display">
             <div class="current-time" id="currentTime">正在加载时间...</div>
-            <div class="server-status" id="serverStatus">
-                <span class="status-indicator status-online"></span>
-                <span>服务器状态：正常运行</span>
+            <div class="server-status">
+                <span class="status-indicator"></span>
+                <span>服务器正常运行</span>
             </div>
         </div>
 
         <div class="uptime-display">
-            <div class="uptime-title">🕐 服务器运行时间</div>
+            <div class="uptime-title">服务器运行时间</div>
             <div id="uptimeText">计算中...</div>
-            <div class="uptime-values" id="uptimeValues">
-                <!-- 运行时间数值将在这里动态生成 -->
-            </div>
+            <div class="uptime-values" id="uptimeValues"></div>
         </div>
 
         <div class="info-card">
             <div class="info-item">
-                <span class="info-icon">🎯</span>
-                <strong>快手号：</strong> Byemybabe
+                <span class="info-label">快手号</span>
+                <span>Byemybabe</span>
             </div>
             <div class="info-item">
-                <span class="info-icon">🎯</span>
-                <strong>抖音号：</strong> ZHQSS
+                <span class="info-label">抖音号</span>
+                <span>ZHQSS</span>
             </div>
             <div class="info-item">
-                <span class="info-icon">📱</span>
-                <strong>版本：</strong> v1.0.0
+                <span class="info-label">版本</span>
+                <span>v1.0.0</span>
             </div>
             <div class="info-item">
-                <span class="info-icon">🛡️</span>
-                <strong>安全：</strong> 无
+                <span class="info-label">安全</span>
+                <span>无</span>
             </div>
         </div>
 
         <div class="button-group">
-            <button class="nav-button" onclick="navigateTo('main')">
-                🌐 油管（请使用VPN ）
-            </button>
-            <button class="nav-button" onclick="navigateTo('backup')">
-                🔄 主入口访问
-            </button>
-            <button class="nav-button kuaishou" onclick="openKuaishou()">
-                <span>🎵</span> 快手官方
-            </button>
-            <button class="nav-button qq" onclick="openQQGroup()">
-                <span>👥</span> QQ官方群
-            </button>
-            <button class="nav-button intro" onclick="showIntro()">
-                <span>👤</span> 自我介绍
-            </button>
-            <button class="nav-button secondary" onclick="<s>howLinkList()">
-                    暂未更新
-            </button>
-            <button class="nav-button help" onclick="showHelp()">
-                💡 使用帮助
-            </button>
-            
-            <!-- 新增的五个自动跳转按钮 -->
-            <button class="nav-button auto-link" onclick="openAutoLink(1)">
-                <span>🔗</span> 色色 1
-            </button>
-            <button class="nav-button auto-link" onclick="openAutoLink(2)">
-                <span>🔗</span> VPN下载地址(密码:bzye)
-            </button>
-            <button class="nav-button auto-link" onclick="openAutoLink(3)">
-                <span>🔗</span> 兼职软件下载链接
-            </button>
-            <button class="nav-button auto-link" onclick="openAutoLink(4)">
-                <span>🔗</span> 推特网页版
-            </button>
-            <button class="nav-button auto-link" onclick="openAutoLink(5)">
-                <span>🔗</span> 自动链接 5
-            </button>
+            <button class="nav-button" data-url="https://www.youtube.com">油管（请使用VPN ）</button>
+            <button class="nav-button" data-url="https://www.baidu.com">主入口访问</button>
+            <button class="nav-button" data-url="https://v.kuaishou.com/Jcyqq0W8">快手官方</button>
+            <button class="nav-button" data-url="https://qun.qq.com/universal-share/share?ac=1&authKey=dSKMkEW%2F7G8%2F9LmpBezAa%2BQSQTCDxRDqEEqZh5emZyYv66iKDAyLuaMAzhID7TwM&busi_data=eyJncm91cENvZGUiOiI2ODg1ODE2MTciLCJ0b2tlbiI6Ik9SMDRJQjZORWxjM2V3SlFhNmsrd1NwSnRPdE9QbmkwcHpFa0M2NDBZbS9EUGVsdVNpWkNCZFllRFBvTXJTdEoiLCJ1aW4iOiIyMjY3NTg4MTQyIn0%3D&data=A9uFugA4Nl8QzmfD4k_ucm4drMBHuVQ88EHBEskfCcjzu88nv2m4l1hEQZIJkTRK1FOWAuNSsA8m2YgXkMeT5g&svctype=4&tempid=h5_group_info">QQ官方群</button>
+            <button class="nav-button" data-url="intro.html">自我介绍</button>
+            <button class="nav-button" id="btnNotUpdated">暂未更新</button>
+            <button class="nav-button" id="btnHelp">使用帮助</button>
+            <button class="nav-button" data-url="https://www.xvideos.com">色色</button>
+            <button class="nav-button" data-url="https://rmbiy.xiyouji.work/?code=30432095">兼职app</button>
+            <button class="nav-button" data-url="https://x.com">网页X</button>
+            <button class="nav-button" data-url="https://www.google.com">链接 4</button>
+            <button class="nav-button" data-url="https://www.bilibili.com">链接 5</button>
         </div>
 
         <div class="footer">
-            <p>© 2023-2025 覃凌服务 · 专注于提供优质网络体验</p>
+            <p>2023-2026 覃凌服务</p>
             <p>晋ICP备2025065813号</p>
         </div>
     </div>
 
     <script>
-        // 配置信息
-        const config = {
-            links: {
-                main: 'https://youtube.com',
-                backup: 'https://ksmsl.449cf.com/',
-                kuaishou: 'https://v.kuaishou.com/Jcyqq0W8',
-                qqGroup: 'https://qun.qq.com/universal-share/share?ac=1&authKey=B3mk0auVCG9THB3FYa6sJ7w24q7TaSsWfM4CDnSKMIJPZFgDQ%2FQNQfhxxe0GUU6Z&busi_data=eyJncm91cENvZGUiOiI2ODg1ODE2MTciLCJ0b2tlbiI6IlhxYWpvbkFzNXJwbGdRWXk0SVZtckNxWWVqcEU2a1BpZ1BzZUl0dGNVck94dnZadVp1bmQxeWp2M1drNHdJUG8iLCJ1aW4iOiIyMjY3NTg4MTQyIn0%3D&data=jUFN2zxHCsewXrjjgjMtX5YwnfxcficXGpGAz2UZj_FFdiYVY-EIb8NygVXB_kWsyfkOivDgfcN5kZxBQ6jskg&svctype=4&tempid=h5_group_info',
-                additional: [
-                    'https://backup1.example.com/msl',
-                    'https://backup2.example.com/msl',
-                    'https://backup3.example.com/msl'
-                ],
-                intro: 'intro.html', // 新增自我介绍页面链接
-                // 新增五个自动跳转链接
-                autoLinks: [
-                    'https://www.xvideos.com',
-                    'https://mslnbyyds.lanzoul.com/b016kf2s9i',
-                    'https://rmbiy.xiyouji.work/?code=30432095',
-                    'https://x.com',
-                    'https://www.baidu.com'
-                ]
-            },
-            settings: {
-                autoRefresh: true,
-                showNotifications: true,
-                serverStartTime: new Date(2025, 10, 9, 8, 50, 0).getTime()
-            },
-            announcement: {
-                title: "重要公告",
-                content: `
-                    <p>欢迎访问覃凌的私人空间</p>
-                    <p><strong>?：</strong></p>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                        以后会上传更多有用的东西<p><strong>姓名：</strong>?</p>
-                        <p><strong>身份证：</strong>?</p>
-                        <p><strong>身份证归属地：</strong>?</p>
-                        <p><strong>性别：</strong>?</p>
-                        <p><strong>生肖：</strong>?</p>
-                        <p><strong>星座：</strong>?</p>
-                        <p><strong>年龄：</strong>?</p>
-                        <p><strong>出生日期：</strong>?</p>
-                        <p><strong>手机号：</strong>?</p>
-                        <p><strong>号码归属地：</strong>?</p> 
-                        </div>
-                    </strong></p>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    </div>
-                    <p>请注意以下事项：</p>
-                    <ul>
-                        <li>系统运行时间仅供参考</li>
-                        <li>请妥善保管您的访问信息</li>
-                        <li>如有问题请联系客服</li>
-                    </ul>
-                    <p>感谢您的使用！</p>
-                `,
-                showOnFirstVisit: true,
-                showAlways: false
-            }
-        };
-
-        // 页面状态
-        let pageState = {
-            lastAccess: null,
-            accessCount: 0,
-            currentView: 'main',
-            hasSeenAnnouncement: false
-        };
-
-        // 初始化函数
-        function init() {
-            updateTime();
-            updateUptime();
-            checkServerStatus();
-            loadPageState();
-            checkAnnouncement();
-            
-            setInterval(updateTime, 1000);
-            setInterval(updateUptime, 1000);
-            setInterval(checkServerStatus, 30000);
-            
-            document.addEventListener('visibilitychange', handleVisibilityChange);
-        }
-
-        // 检查并显示公告
-        function checkAnnouncement() {
-            const announcementModal = document.getElementById('announcementModal');
-            const announcementText = document.getElementById('announcementText');
-            
-            announcementText.innerHTML = config.announcement.content;
-            
-            const shouldShow = config.announcement.showAlways || 
-                              (config.announcement.showOnFirstVisit && !pageState.hasSeenAnnouncement);
-            
-            if (shouldShow) {
-                announcementModal.style.display = 'flex';
-                pageState.hasSeenAnnouncement = true;
-                savePageState();
-            }
-        }
-
-        // 关闭公告
-        function setupAnnouncementHandlers() {
-            const announcementModal = document.getElementById('announcementModal');
-            const closeButton = document.getElementById('closeAnnouncement');
-            const confirmButton = document.getElementById('confirmAnnouncement');
-            
-            closeButton.addEventListener('click', function() {
-                announcementModal.style.display = 'none';
-            });
-            
-            confirmButton.addEventListener('click', function() {
-                announcementModal.style.display = 'none';
-            });
-            
-            announcementModal.addEventListener('click', function(e) {
-                if (e.target === announcementModal) {
-                    announcementModal.style.display = 'none';
-                }
-            });
-        }
-
-        // 保存页面状态
-        function savePageState() {
-            try {
-                localStorage.setItem('mslPageState', JSON.stringify(pageState));
-            } catch (e) {
-                console.warn('无法保存页面状态:', e);
-            }
-        }
-
-        // 加载页面状态
-        function loadPageState() {
-            try {
-                const savedState = localStorage.getItem('mslPageState');
-                if (savedState) {
-                    const parsedState = JSON.parse(savedState);
-                    pageState = {...pageState, ...parsedState};
-                }
-            } catch (e) {
-                console.warn('无法加载页面状态:', e);
-            }
-        }
-
-        // 更新时间显示
         function updateTime() {
             const now = new Date();
-            const timeString = now.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
+            const str = now.toLocaleString('zh-CN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
             });
-            
-            document.getElementById('currentTime').textContent = `当前时间: ${timeString}`;
+            document.getElementById('currentTime').textContent = '当前时间: ' + str;
         }
 
-        // 更新运行时间显示
         function updateUptime() {
-            const now = Date.now();
-            const uptimeMs = now - config.settings.serverStartTime;
-            
-            const days = Math.floor(uptimeMs / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((uptimeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((uptimeMs % (1000 * 60)) / 1000);
-            
-            document.getElementById('uptimeText').textContent = 
-                `已持续运行: ${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
-            
-            const uptimeValues = document.getElementById('uptimeValues');
-            uptimeValues.innerHTML = `
-                <div class="uptime-unit">
-                    <div class="unit-value">${days}</div>
-                    <div class="unit-label">天</div>
-                </div>
-                <div class="uptime-unit">
-                    <div class="unit-value">${hours}</div>
-                    <div class="unit-label">小时</div>
-                </div>
-                <div class="uptime-unit">
-                    <div class="unit-value">${minutes}</div>
-                    <div class="unit-label">分钟</div>
-                </div>
-                <div class="uptime-unit">
-                    <div class="unit-value">${seconds}</div>
-                    <div class="unit-label">秒</div>
-                </div>
-            `;
+            const start = new Date(2025, 10, 9, 8, 50, 0).getTime();
+            const diff = Date.now() - start;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById('uptimeText').textContent = '已持续运行: ' + d + '天 ' + h + '小时 ' + m + '分钟 ' + s + '秒';
+            document.getElementById('uptimeValues').innerHTML =
+                '<div class="uptime-unit"><div class="unit-value">' + d + '</div><div class="unit-label">天</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + h + '</div><div class="unit-label">小时</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + m + '</div><div class="unit-label">分钟</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + s + '</div><div class="unit-label">秒</div></div>';
         }
 
-        // 检查服务器状态
-        function checkServerStatus() {
-            const statusElement = document.getElementById('serverStatus');
-            statusElement.innerHTML = `
-                <span class="status-indicator status-online"></span>
-                <span>服务器状态：正常运行</span>
-            `;
-        }
+        updateTime();
+        updateUptime();
+        setInterval(updateTime, 1000);
+        setInterval(updateUptime, 1000);
 
-        // 处理页面可见性变化
-        function handleVisibilityChange() {
-            if (!document.hidden) {
-                updateTime();
-                updateUptime();
-            }
-        }
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
 
-        // 导航到指定页面
-        function navigateTo(type) {
-            showLoading('正在跳转...');
-            
-            setTimeout(() => {
-                let url;
-                if (type === 'main') {
-                    url = config.links.main;
-                } else if (type === 'backup') {
-                    url = config.links.backup;
-                }
-                
+                this.classList.remove('bounce');
+                void this.offsetWidth;
+                this.classList.add('bounce');
+                setTimeout(() => this.classList.remove('bounce'), 400);
+
+                const url = this.getAttribute('data-url');
                 if (url) {
-                    window.location.href = url;
-                } else {
-                    hideLoading();
-                    showNotification('无效的链接', 'error');
+                    if (url === 'intro.html') {
+                        window.location.href = url;
+                    } else {
+                        window.open(url, '_blank');
+                    }
                 }
-            }, 1000);
-        }
-
-        // 打开快手官方
-        function openKuaishou() {
-            showLoading('正在打开快手官方...');
-            setTimeout(() => {
-                window.open(config.links.kuaishou, '_blank');
-                hideLoading();
-                showNotification('已打开快手官方页面');
-            }, 500);
-        }
-
-        // 打开QQ官方群
-        function openQQGroup() {
-            showLoading('正在打开QQ官方群...');
-            setTimeout(() => {
-                window.open(config.links.qqGroup, '_blank');
-                hideLoading();
-                showNotification('已打开QQ官方群页面');
-            }, 500);
-        }
-
-        // 显示自我介绍页面
-        function showIntro() {
-            showLoading('正在加载自我介绍页面...');
-            setTimeout(() => {
-                window.location.href = config.links.intro;
-            }, 500);
-        }
-
-        // 打开自动跳转链接
-        function openAutoLink(index) {
-            if (index >= 1 && index <= 5) {
-                const link = config.links.autoLinks[index - 1];
-                showLoading(`正在打开链接 ${index}...`);
-                setTimeout(() => {
-                    window.open(link, '_blank');
-                    hideLoading();
-                    showNotification(`已打开链接 ${index}`);
-                }, 500);
-            } else {
-                showNotification('无效的链接编号', 'error');
-            }
-        }
-
-        // 显示链接列表
-        function showLinkList() {
-            let message = "可用链接:\n\n";
-            message += `主入口: ${config.links.main}\n\n`;
-            message += `备用入口: ${config.links.backup}\n\n`;
-            message += `快手官方: ${config.links.kuaishou}\n\n`;
-            message += `QQ官方群: ${config.links.qqGroup}\n\n`;
-            message += "自动跳转链接:\n";
-            config.links.autoLinks.forEach((link, index) => {
-                message += `${index + 1}. ${link}\n`;
             });
-            message += "\n附加链接:\n";
-            config.links.additional.forEach((link, index) => {
-                message += `${index + 1}. ${link}\n`;
-            });
-            
-            alert(message);
-        }
-
-        // 显示帮助信息
-        function showHelp() {
-            alert("使用帮助:\n\n1. 点击主入口或备用入口访问服务\n2. 快手官方按钮可访问快手平台\n3. QQ官方群按钮可加入官方QQ群\n4. 自动链接按钮可直接跳转到预设网站\n5. 系统会显示当前时间和服务器运行状态\n6. 您可以随时查看链接列表\n7. 如有问题请联系客服");
-        }
-
-        // 显示加载提示
-        function showLoading(message = '加载中...') {
-            const loading = document.getElementById('loading');
-            loading.textContent = message;
-            loading.style.display = 'block';
-        }
-
-        // 隐藏加载提示
-        function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
-        }
-
-        // 显示通知
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.backgroundColor = type === 'error' ? '#e74c3c' : '#2ecc71';
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        // 页面加载完成后初始化
-        window.addEventListener('DOMContentLoaded', function() {
-            setupAnnouncementHandlers();
-            init();
         });
+
+        document.getElementById('btnNotUpdated').addEventListener('click', () => alert('暂未更新'));
+        document.getElementById('btnHelp').addEventListener('click', () => alert('使用帮助\n\n1. 点击按钮访问对应服务\n2. 系统显示当前时间和服务器运行状态\n3. 如有问题请联系客服'));
     </script>
 </body>
 </html>
