@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js"  data-fadeOutAutoplay data-memory="1"></div>
+<script src="https://player.xfyun.club/js/xf-MusicPlayer/js/xf-MusicPlayer.min.js"></script>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>覃凌入口</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 20px;
+            background: url('https://cdn.jsdelivr.net/gh/lime10764/WMJ10764.github.io@main/1110099.webp') center/cover no-repeat fixed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 24px;
+            padding: 36px;
+            max-width: 640px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            text-align: center;
+        }
+
+        .title {
+            font-size: 1.8em;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .time-display {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 18px 0;
+            font-size: 0.95em;
+            line-height: 1.7;
+            color: #fff;
+        }
+
+        .current-time {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #fff;
+            font-size: 0.9em;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #4ade80;
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .uptime-display {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            padding: 16px;
+            margin: 16px 0;
+            color: #fff;
+        }
+
+        .uptime-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .uptime-values {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .uptime-unit {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 8px 4px;
+            border-radius: 8px;
+        }
+
+        .unit-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .unit-label {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.65);
+            margin-top: 2px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 16px;
+            border-radius: 14px;
+            margin: 18px 0;
+            text-align: left;
+            color: #fff;
+        }
+
+        .info-item {
+            margin: 8px 0;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label {
+            color: rgba(255,255,255,0.6);
+            min-width: 70px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 24px 0 16px;
+        }
+
+        .nav-button {
+            position: relative;
+            overflow: hidden;
+            padding: 13px 16px;
+            font-size: 0.88em;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-button:active {
+            transform: scale(0.94);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .nav-button.bounce {
+            animation: bounceBack 0.35s ease;
+        }
+
+        @keyframes bounceBack {
+            0% { transform: scale(0.94); }
+            60% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-button .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(2.5); opacity: 0; }
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 16px;
+                margin: 10px;
+            }
+            .title { font-size: 1.4em; }
+            .button-group {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .nav-button {
+                padding: 14px;
+                font-size: 0.92em;
+            }
+            .uptime-values {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">覃凌入口</div>
+        <div class="subtitle">精确运行时间监控系统</div>
+
+        <div class="time-display">
+            <div class="current-time" id="currentTime">正在加载时间...</div>
+            <div class="server-status">
+                <span class="status-indicator"></span>
+                <span>服务器正常运行</span>
+            </div>
+        </div>
+
+        <div class="uptime-display">
+            <div class="uptime-title">服务器运行时间</div>
+            <div id="uptimeText">计算中...</div>
+            <div class="uptime-values" id="uptimeValues"></div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-item">
+                <span class="info-label">快手号</span>
+                <span>Byemybabe</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">抖音号</span>
+                <span>ZHQSS</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">版本</span>
+                <span>v1.0.0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">安全</span>
+                <span>无</span>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="nav-button" data-url="https://www.youtube.com">油管（请使用VPN ）</button>
+            <button class="nav-button" data-url="https://www.baidu.com">主入口访问</button>
+            <button class="nav-button" data-url="https://v.kuaishou.com/Jcyqq0W8">快手官方</button>
+            <button class="nav-button" data-url="https://qun.qq.com/universal-share/share?ac=1&authKey=dSKMkEW%2F7G8%2F9LmpBezAa%2BQSQTCDxRDqEEqZh5emZyYv66iKDAyLuaMAzhID7TwM&busi_data=eyJncm91cENvZGUiOiI2ODg1ODE2MTciLCJ0b2tlbiI6Ik9SMDRJQjZORWxjM2V3SlFhNmsrd1NwSnRPdE9QbmkwcHpFa0M2NDBZbS9EUGVsdVNpWkNCZFllRFBvTXJTdEoiLCJ1aW4iOiIyMjY3NTg4MTQyIn0%3D&data=A9uFugA4Nl8QzmfD4k_ucm4drMBHuVQ88EHBEskfCcjzu88nv2m4l1hEQZIJkTRK1FOWAuNSsA8m2YgXkMeT5g&svctype=4&tempid=h5_group_info">QQ官方群</button>
+            <button class="nav-button" data-url="intro.html">自我介绍</button>
+            <button class="nav-button" id="btnNotUpdated">暂未更新</button>
+            <button class="nav-button" id="btnHelp">使用帮助</button>
+            <button class="nav-button" data-url="https://www.xvideos.com">色色</button>
+            <button class="nav-button" data-url="https://rmbiy.sbzapp.cn/?code=30432095">兼职app</button>
+            <button class="nav-button" data-url="https://x.com">网页X</button>
+            <button class="nav-button" data-url="https://www.google.com">链接 4</button>
+            <button class="nav-button" data-url="https://www.bilibili.com">链接 5</button>
+        </div>
+
+        <div class="footer">
+            <p>2023-2026 覃凌服务</p>
+            <p>晋ICP备2025065813号</p>
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const str = now.toLocaleString('zh-CN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            });
+            document.getElementById('currentTime').textContent = '当前时间: ' + str;
+        }
+
+        function updateUptime() {
+            const start = new Date(2025, 10, 9, 8, 50, 0).getTime();
+            const diff = Date.now() - start;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById('uptimeText').textContent = '已持续运行: ' + d + '天 ' + h + '小时 ' + m + '分钟 ' + s + '秒';
+            document.getElementById('uptimeValues').innerHTML =
+                '<div class="uptime-unit"><div class="unit-value">' + d + '</div><div class="unit-label">天</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + h + '</div><div class="unit-label">小时</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + m + '</div><div class="unit-label">分钟</div></div>' +
+                '<div class="uptime-unit"><div class="unit-value">' + s + '</div><div class="unit-label">秒</div></div>';
+        }
+
+        updateTime();
+        updateUptime();
+        setInterval(updateTime, 1000);
+        setInterval(updateUptime, 1000);
+
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+
+                this.classList.remove('bounce');
+                void this.offsetWidth;
+                this.classList.add('bounce');
+                setTimeout(() => this.classList.remove('bounce'), 400);
+
+                const url = this.getAttribute('data-url');
+                if (url) {
+                    if (url === 'intro.html') {
+                        window.location.href = url;
+                    } else {
+                        window.open(url, '_blank');
+                    }
+                }
+            });
+        });
+
+        document.getElementById('btnNotUpdated').addEventListener('click', () => alert('暂未更新'));
+        document.getElementById('btnHelp').addEventListener('click', () => alert('使用帮助\n\n1. 点击按钮访问对应服务\n2. 系统显示当前时间和服务器运行状态\n3. 如有问题请联系客服'));
+    </script>
+</body>
+</html>
